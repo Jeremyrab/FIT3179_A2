@@ -19,11 +19,11 @@
             }
           ],
           "groupby": ["AgeDescription"]
-        },
-        {"filter": "datum.AgeDescription != 'Unknown'"}
+        }
       ],
       "mark": {"type": "arc", "innerRadius": 100},
       "encoding": {
+        "tooltip":[{"field": "AgeDescription"}],
         "theta": {
           "field": "aggregated_AgeDescription_count",
           "type": "quantitative",
