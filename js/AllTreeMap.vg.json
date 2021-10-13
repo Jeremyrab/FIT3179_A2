@@ -1,0 +1,52 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "width": "container",
+    "height": 600,
+    "title": "Trees in the City of Melbourne",
+    "projection": {"type": "mercator"},
+    "padding": 15,
+    "layer": [
+      {
+        "data": {
+          "url": "data/features.topojson",
+          "format": {"type": "topojson", "feature": "features"}
+        },
+        "mark": {"type": "geoshape", "fill": "#E0ECF4", "stroke": "darkgray"}
+      },
+      {
+        "data": {"url": "data/Trees__with_species_and_dimensions__Urban_Forest_.csv"},
+        "mark": "circle",
+        "encoding": {
+          "longitude": {"field": "Longitude", "type": "quantitative"},
+          "latitude": {"field": "Latitude", "type": "quantitative"},
+          "tooltip": [
+            {"field": "CoM ID", "type": "ordinal", "title": "Tree ID: "},
+            {"field": "Located in", "type": "nominal", "title": "Located in: "},
+            {"field": "height", "type": "quantitative", "title": "Height: "}
+          ],
+          "size": {"value": 5},
+          "color": {
+            "field": "AgeDescription",
+            "scale": {
+              "range": ["#A5DB96","#87CC79","#6AB25F","#4E9A51","#346636","#808080"]
+            },
+            "type": "ordinal",
+            "sort": [
+              "New",
+              "Juvenile",
+              "Semi-Mature",
+              "Mature",
+              "Over-mature",
+              "Unknown"
+            ],
+            "title": "Age of the tree"
+          }
+        }
+      }
+    ],
+    "config": {"background": "#E0ECF4",  "style": {
+      "cell": {
+        "stroke": "transparent"
+      }
+    }}
+  }

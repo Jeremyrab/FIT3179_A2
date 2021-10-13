@@ -1,0 +1,55 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "padding": 5,
+  "width": 300,
+  "height": 300,
+  "title": "Locations of the significant trees",
+  "layer": [
+    {
+      "data": {
+        "url": "data/Trees__with_species_and_dimensions__Urban_Forest_.csv"
+      },
+      "transform": [
+        {
+          "aggregate": [
+            {
+              "op": "count",
+              "field": "AgeDescription",
+              "as": "aggregated_AgeDescription_count"
+            }
+          ],
+          "groupby": ["AgeDescription"]
+        },
+        {"filter": "datum.AgeDescription != 'Unknown'"}
+      ],
+      "mark": {"type": "arc", "innerRadius": 100},
+      "encoding": {
+        "theta": {
+          "field": "aggregated_AgeDescription_count",
+          "type": "quantitative",
+          "sort": ["New", "Juvenile", "Semi-Mature", "Mature", "Over-mature"]
+        },
+        "color": {
+          "field": "AgeDescription",
+          "scale": {
+            "range": [
+              "#A5DB96",
+              "#87CC79",
+              "#6AB25F",
+              "#4E9A51",
+              "#346636",
+              "#808080"
+            ]
+          },
+          "type": "ordinal",
+          "sort": ["New", "Juvenile", "Semi-Mature", "Mature", "Over-mature"],
+          "title": "Age of the tree"
+        }
+      }
+    }
+  ],
+  "config": {
+    "background": "#E0ECF4",
+    "style": {"cell": {"stroke": "transparent"}}
+  }
+}

@@ -1,0 +1,34 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "padding" : 5,
+    "width": 300,
+    "height": 300,
+    "title": "Locations of the significant trees",
+    "layer": [
+      {
+        "data": {"url": "https://raw.githubusercontent.com/JeremyrabUni/FIT3179_A2/main/data/yarra-significant-trees-fixed.csv"},
+        "transform": [
+          {
+            "aggregate": [
+              {
+                "op": "count",
+                "field": "location",
+                "as": "aggregated_location_count"
+              }
+            ],
+            "groupby": ["location"]
+          }
+        ],
+        "mark": {"type": "arc", "innerRadius": 100},
+        "encoding": {
+          "theta": {"field": "aggregated_location_count", "type": "quantitative"},
+          "color": {"field": "location", "type": "nominal"}
+        }
+      }
+    ],
+    "config": {"background": "#E0ECF4",  "style": {
+        "cell": {
+          "stroke": "transparent"
+        }
+      }}
+  }
