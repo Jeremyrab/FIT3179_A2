@@ -89,7 +89,7 @@
                 "Over-mature",
                 "Unknown"
               ],
-              "title": "Age of the tree"
+              "title": ""
             }
           }
         }
@@ -193,7 +193,7 @@
                   },
                   "type": "ordinal",
                   "sort": ["New", "Juvenile", "Semi-Mature", "Mature", "Over-mature"],
-                  "title": "Age of the tree"
+                  "title": "Maturity"
                 },
                 "opacity": {
                   "condition": {"param": "MaturitySelection", "value": 1},

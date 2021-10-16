@@ -1,0 +1,248 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "data": {
+      "name": "sigTreesData",
+      "url": "data/yarra-significant-trees-fixed.csv",
+      "format": {"type": "csv"}
+    },
+    "params": [
+      {
+        "name": "zoom_level",
+        "value": 350000,
+        "bind": {"input": "range", "min": 350000, "max": 3000000, "step": 5000}
+      },
+      {
+        "name": "centerX",
+        "value": 0,
+        "bind": {"input": "range", "min": -1000, "max": 1000, "step": 50}
+      },
+      {
+        "name": "centerY",
+        "value": 0,
+        "bind": {"input": "range", "min": -1000, "max": 1000, "step": 50}
+      }
+    ],
+    "vconcat": [
+      {
+        "hconcat": [
+          {
+            "width": 450,
+            "height": 450,
+            "title": "Significants Trees in the City of Yarra",
+            "projection": {
+              "type": "conicEqualArea",
+              "parallels": [144.9515185, -37.77349821],
+              "center": {
+                "expr": "[144.9515185+centerX/10000,-37.77349821+centerY/10000]"
+              },
+              "scale": {"expr": "zoom_level"}
+            },
+            "layer": [
+              {
+                "data": {
+                  "url": "data/features.topojson",
+                  "format": {"type": "topojson", "feature": "features"}
+                },
+                "mark": {
+                  "type": "geoshape",
+                  "fill": "#E0ECF4",
+                  "stroke": "darkgray"
+                }
+              },
+              {
+                "data": {
+                  "url": "data/yarra-significant-trees-fixed.csv",
+                  "format": {"type": "csv"}
+                },
+                "transform": [
+                  {"filter": {"param": "GenusSelection"}},
+                  {"filter": {"param": "LocationSelection"}},
+                  {"filter": {"param": "dbhbrush"}}
+                ],
+                "mark": "circle",
+                "encoding": {
+                  "longitude": {"field": "lon", "type": "quantitative"},
+                  "latitude": {"field": "lat", "type": "quantitative"},
+                  "tooltip": [
+                    {
+                      "field": "age",
+                      "type": "ordinal",
+                      "title": "Age of the tree: "
+                    },
+                    {
+                      "field": "common",
+                      "type": "nominal",
+                      "title": "Tree Type: "
+                    },
+                    {
+                      "field": "height",
+                      "type": "quantitative",
+                      "title": "Height: "
+                    }
+                  ],
+                  "size": {"value": 15},
+                  "color": {
+                    "field": "location",
+                    "scale": {
+                      "range": [
+                        "#e41a1c",
+                        "#377eb8",
+                        "#4daf4a",
+                        "#984ea3",
+                        "#ff7f00"
+                      ]
+                    },
+                    "type": "ordinal",
+                    "title": "Location"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "width": 450,
+            "height": 450,
+            "title": "Distribution of Tree Diameters",
+            "transform": [
+              {"filter": {"param": "GenusSelection"}},
+              {"filter": {"param": "LocationSelection"}}
+            ],
+            "layer": [
+              {
+                "mark": {"type": "bar", "color": "green"},
+                "params": [
+                    {
+                      "name": "dbhbrush",
+                      "select": {"type": "interval", "encodings": ["x"]}
+                    }
+                  ],
+                "encoding": {
+                  "x": {
+                    "bin": {"extent": [0, 140], "step": 6},
+                    "field": "dbh",
+                    "title": "Diameter (cm)"
+                  },
+                  "y": {"aggregate": "count", "title": "Count of Trees"}
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "hconcat": [
+          {
+            "title": "Most Common Type of Tree in Melbourne",
+            "height": 450,
+            "width": 450,
+            "mark": {"type": "bar", "color": "green"},
+            "params": [
+              {
+                "name": "GenusSelection",
+                "select": {"type": "point", "encodings": ["y"]}
+              }
+            ],
+            "transform": [
+              {"filter": {"param": "LocationSelection"}},
+              {"filter": {"param": "dbhbrush"}},
+              {
+                "aggregate": [
+                  {
+                    "op": "count",
+                    "field": "genus",
+                    "as": "aggregated_common_count"
+                  }
+                ],
+                "groupby": ["genus"]
+              },
+              {
+                "window": [{"op": "rank", "as": "rank"}],
+                "sort": [
+                  {"field": "aggregated_common_count", "order": "descending"}
+                ]
+              },
+              {"filter": "datum.rank < 10"}
+            ],
+            "encoding": {
+              "x": {
+                "field": "aggregated_common_count",
+                "type": "quantitative",
+                "title": "Count of Tree"
+              },
+              "y": {
+                "field": "genus",
+                "type": "nominal",
+                "sort": {
+                  "field": "aggregated_common_count",
+                  "order": "descending"
+                }
+              },
+              "opacity": {
+                "condition": {"param": "GenusSelection", "value": 1},
+                "value": 0.5
+              }
+            }
+          },
+          {
+            "width": 450,
+            "height": 450,
+            "title": "Locations of the significant trees",
+            "params": [
+              {
+                "name": "LocationSelection",
+                "select": {"type": "point", "fields": ["location"]}
+              }
+            ],
+            "layer": [
+              {
+                "data": {
+                  "url": "https://raw.githubusercontent.com/JeremyrabUni/FIT3179_A2/main/data/yarra-significant-trees-fixed.csv"
+                },
+                "transform": [
+                  {"filter": {"param": "GenusSelection"}},
+                  {"filter": {"param": "dbhbrush"}},
+                  {
+                    "aggregate": [
+                      {
+                        "op": "count",
+                        "field": "location",
+                        "as": "aggregated_location_count"
+                      }
+                    ],
+                    "groupby": ["location"]
+                  }
+                ],
+                "mark": {"type": "arc", "innerRadius": 100},
+                "encoding": {
+                  "theta": {
+                    "field": "aggregated_location_count",
+                    "type": "quantitative"
+                  },
+                  "color": {
+                    "field": "location",
+                    "scale": {
+                      "range": [
+                        "#e41a1c",
+                        "#377eb8",
+                        "#4daf4a",
+                        "#984ea3",
+                        "#ff7f00"
+                      ]
+                    }
+                  },
+                  "opacity": {
+                    "condition": {"param": "LocationSelection", "value": 1},
+                    "value": 0.5
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "config": {
+      "background": "#E0ECF4",
+      "style": {"cell": {"stroke": "transparent"}}
+    }
+  }
