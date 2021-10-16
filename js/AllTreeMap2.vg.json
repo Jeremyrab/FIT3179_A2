@@ -1,0 +1,200 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "autosize": {"type": "fit-x", "contains": "padding"},
+    "background": "#E0ECF4",
+    "padding": 15,
+    "height": 600,
+    "title": {"text": "Trees in the City of Melbourne", "frame": "group"},
+    "style": "cell",
+    "data": [
+      {
+        "name": "mapData",
+        "url": "data/features.topojson",
+        "format": {"type": "topojson", "feature": "features"}
+      },
+      {
+        "name": "source_0",
+        "url": "data/Trees__with_species_and_dimensions__Urban_Forest_.csv",
+        "format": {
+          "type": "csv",
+          "parse": {"YearPlanted": "number"},
+          "delimiter": ","
+        },
+        "transform": [
+          {"type": "filter", "expr": "datum.YearPlanted <= PlantedBefore"},
+          {
+            "type": "geojson",
+            "fields": ["Longitude", "Latitude"],
+            "signal": "layer_1_geojson_0"
+          },
+          {
+            "type": "geopoint",
+            "projection": "projection",
+            "fields": ["Longitude", "Latitude"],
+            "as": ["layer_1_x", "layer_1_y"]
+          },
+          {
+            "type": "formula",
+            "expr": "datum[\"AgeDescription\"]===\"New\" ? 0 : datum[\"AgeDescription\"]===\"Juvenile\" ? 1 : datum[\"AgeDescription\"]===\"Semi-Mature\" ? 2 : datum[\"AgeDescription\"]===\"Mature\" ? 3 : datum[\"AgeDescription\"]===\"Over-mature\" ? 4 : datum[\"AgeDescription\"]===\"Unknown\" ? 5 : 6",
+            "as": "color_AgeDescription_sort_index"
+          }
+        ]
+      }
+    ],
+    "projections": [
+      {
+        "name": "projection",
+        "size": {"signal": "[width, height]"},
+        "scale": {"signal": "scale"},
+        "translate": [{"signal": "tx"},{"signal": "ty"}],
+        "type": "mercator"
+      }
+    ],
+    "signals": [
+      {
+        "name": "width",
+        "init": "isFinite(containerSize()[0]) ? containerSize()[0] : 200",
+        "on": [
+          {
+            "update": "isFinite(containerSize()[0]) ? containerSize()[0] : 200",
+            "events": "window:resize"
+          }
+        ]
+      },
+      {
+        "name": "PlantedBefore",
+        "value": 2021,
+        "bind": {"input": "range", "min": 1889, "max": 2021, "step": 1}
+      },
+      { "name": "tx", "update": "width / 2" },
+    { "name": "ty", "update": "height / 2" },
+    {
+      "name": "scale",
+      "value": 150,
+      "on": [{
+        "events": {"type": "wheel", "consume": true},
+        "update": "clamp(scale * pow(1.0005, -event.deltaY * pow(16, event.deltaMode)), 150, 3000)"
+      }]
+    },
+    {
+      "name": "angles",
+      "value": [0, 0],
+      "on": [{
+        "events": "mousedown",
+        "update": "[rotateX, centerY]"
+      }]
+    },
+    {
+      "name": "cloned",
+      "value": null,
+      "on": [{
+        "events": "mousedown",
+        "update": "copy('projection')"
+      }]
+    },
+    {
+      "name": "start",
+      "value": null,
+      "on": [{
+        "events": "mousedown",
+        "update": "invert(cloned, xy())"
+      }]
+    },
+    {
+      "name": "drag", "value": null,
+      "on": [{
+        "events": "[mousedown, window:mouseup] > window:mousemove",
+        "update": "invert(cloned, xy())"
+      }]
+    },
+    {
+      "name": "delta", "value": null,
+      "on": [{
+        "events": {"signal": "drag"},
+        "update": "[drag[0] - start[0], start[1] - drag[1]]"
+      }]
+    },
+    {
+      "name": "rotateX", "value": 0,
+      "on": [{
+        "events": {"signal": "delta"},
+        "update": "angles[0] + delta[0]"
+      }]
+    },
+    {
+      "name": "centerY", "value": 0,
+      "on": [{
+        "events": {"signal": "delta"},
+        "update": "clamp(angles[1] + delta[1], -60, 60)"
+      }]
+    }
+    ],
+    "marks": [
+      {
+        "name": "layer_0_marks",
+        "type": "shape",
+        "style": ["geoshape"],
+        "from": {"data": "mapData"},
+        "encode": {
+          "update": {
+            "fill": {"value": "#E0ECF4"},
+            "stroke": {"value": "darkgray"},
+            "ariaRoleDescription": {"value": "geoshape"}
+          }
+        },
+        "transform": [{"type": "geoshape", "projection": "projection"}]
+      },
+      {
+        "name": "layer_1_marks",
+        "type": "symbol",
+        "style": ["circle"],
+        "from": {"data": "source_0"},
+        "encode": {
+          "update": {
+            "opacity": {"value": 0.7},
+            "fill": {"scale": "color", "field": "AgeDescription"},
+            "tooltip": {
+              "signal": "{\"Tree ID: \": isValid(datum[\"CoM ID\"]) ? datum[\"CoM ID\"] : \"\"+datum[\"CoM ID\"], \"Located in: \": isValid(datum[\"Located in\"]) ? datum[\"Located in\"] : \"\"+datum[\"Located in\"], \"Height: \": format(datum[\"height\"], \"\")}"
+            },
+            "ariaRoleDescription": {"value": "circle"},
+            "description": {
+              "signal": "\"Longitude: \" + (format(datum[\"Longitude\"], \"\")) + \"; Latitude: \" + (format(datum[\"Latitude\"], \"\")) + \"; Tree ID: : \" + (isValid(datum[\"CoM ID\"]) ? datum[\"CoM ID\"] : \"\"+datum[\"CoM ID\"]) + \"; Located in: : \" + (isValid(datum[\"Located in\"]) ? datum[\"Located in\"] : \"\"+datum[\"Located in\"]) + \"; Height: : \" + (format(datum[\"height\"], \"\")) + \"; Age of the tree: \" + (isValid(datum[\"AgeDescription\"]) ? datum[\"AgeDescription\"] : \"\"+datum[\"AgeDescription\"])"
+            },
+            "x": {"field": "layer_1_x"},
+            "y": {"field": "layer_1_y"},
+            "size": {"value": 5},
+            "shape": {"value": "circle"}
+          }
+        }
+      }
+    ],
+    "scales": [
+      {
+        "name": "color",
+        "type": "ordinal",
+        "domain": {
+          "data": "source_0",
+          "field": "AgeDescription",
+          "sort": {"op": "min", "field": "color_AgeDescription_sort_index"}
+        },
+        "range": [
+          "#A5DB96",
+          "#87CC79",
+          "#6AB25F",
+          "#4E9A51",
+          "#346636",
+          "#808080"
+        ],
+        "interpolate": "hcl"
+      }
+    ],
+    "legends": [
+      {
+        "title": "Age of the tree",
+        "fill": "color",
+        "symbolType": "circle",
+        "encode": {"symbols": {"update": {"opacity": {"value": 0.7}}}}
+      }
+    ],
+    "config": {"style": {"cell": {"stroke": "transparent"}}}
+  }

@@ -2,19 +2,24 @@
     "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
     "width": "container",
     "height": 600,
+    "params": [
+      {"name": "PlantedBefore", "value":2021, "bind": {"input": "range", "min": 1889, "max": 2021, "step": 1}}
+    ],
     "title": "Trees in the City of Melbourne",
     "projection": {"type": "mercator"},
     "padding": 15,
     "layer": [
       {
         "data": {
+          "name": "mapData",
           "url": "data/features.topojson",
           "format": {"type": "topojson", "feature": "features"}
         },
         "mark": {"type": "geoshape", "fill": "#E0ECF4", "stroke": "darkgray"}
       },
       {
-        "data": {"url": "data/Trees__with_species_and_dimensions__Urban_Forest_.csv"},
+        "data": {"url": "data/Trees__with_species_and_dimensions__Urban_Forest_.csv",        "format":{"type": "csv", "parse": {"YearPlanted": "number"}}},
+        "transform": [{"filter": "datum.YearPlanted <= PlantedBefore"}],
         "mark": "circle",
         "encoding": {
           "longitude": {"field": "Longitude", "type": "quantitative"},
