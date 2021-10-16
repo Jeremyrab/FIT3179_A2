@@ -3,15 +3,17 @@
     "width": "container",
     "height": 600,
     "params": [
-      {"name": "PlantedBefore", "value":2021, "bind": {"input": "range", "min": 1889, "max": 2021, "step": 1}}
+      {"name": "PlantedBefore", "value":2021, "bind": {"input": "range", "min": 1889, "max": 2021, "step": 1}},
+      {"name": "zoom_level", "value": 350000, "bind": {"input": "range", "min": 350000, "max": 3000000, "step": 5000}},
+      {"name": "centerX", "value": 0, "bind": {"input": "range", "min": -1000, "max": 1000, "step": 100}},
+      {"name": "centerY", "value": 0, "bind": {"input": "range", "min": -1000, "max": 1000, "step": 100}}
     ],
     "title": "Trees in the City of Melbourne",
-    "projection": {"type": "mercator"},
+    "projection": {"type": "conicEqualArea",  "parallels":[144.9515185,-37.80149821], "center": {"expr": "[144.9515185+centerX/10000,-37.80149821+centerY/10000]"}, "scale":{"expr": "zoom_level"}},
     "padding": 15,
     "layer": [
       {
         "data": {
-          "name": "mapData",
           "url": "data/features.topojson",
           "format": {"type": "topojson", "feature": "features"}
         },
