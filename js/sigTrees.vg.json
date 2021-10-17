@@ -74,11 +74,11 @@
                     "field": "location",
                     "scale": {
                       "range": [
-                        "#e41a1c",
-                        "#377eb8",
-                        "#4daf4a",
-                        "#984ea3",
-                        "#ff7f00"
+                        "#1170AA",
+                        "#FC7D0B",
+                        "#A3ACB9",
+                        "#57606C",
+                        "#5FA2CE"
                       ]
                     },
                     "type": "ordinal",
@@ -216,16 +216,7 @@
                     "type": "quantitative"
                   },
                   "color": {
-                    "field": "location",
-                    "scale": {
-                      "range": [
-                        "#e41a1c",
-                        "#377eb8",
-                        "#4daf4a",
-                        "#984ea3",
-                        "#ff7f00"
-                      ]
-                    }
+                    "field": "location"
                   },
                   "opacity": {
                     "condition": {"param": "LocationSelection", "value": 1},
