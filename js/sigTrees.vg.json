@@ -26,9 +26,9 @@
       {
         "hconcat": [
           {
-            "width": 450,
-            "height": 450,
-            "title": "Significants Trees in the City of Yarra",
+            "width": 475,
+            "height": 475,
+            "title": "Map of Significant Trees",
             "projection": {
               "type": "conicEqualArea",
               "parallels": [144.9515185, -37.77349821],
@@ -64,21 +64,10 @@
                   "longitude": {"field": "lon", "type": "quantitative"},
                   "latitude": {"field": "lat", "type": "quantitative"},
                   "tooltip": [
-                    {
-                      "field": "age",
-                      "type": "ordinal",
-                      "title": "Age of the tree: "
-                    },
-                    {
-                      "field": "common",
-                      "type": "nominal",
-                      "title": "Tree Type: "
-                    },
-                    {
-                      "field": "height",
-                      "type": "quantitative",
-                      "title": "Height: "
-                    }
+                    {"field": "location", "title": "Location: "},
+                    {"field": "genus", "title": "Genus: "},
+                    {"field": "common", "title": "Common Name: "},
+                    {"field": "dbh", "title": "Diameter (cm): "},{"field": "height", "title": "Height (m)"},{"field":"age", "title":"Age Range:"},{"field": "significance", "title":"Reasons of Significance"}
                   ],
                   "size": {"value": 15},
                   "color": {
@@ -93,15 +82,16 @@
                       ]
                     },
                     "type": "ordinal",
-                    "title": "Location"
+                    "title": "Location",
+                    "legend":null
                   }
                 }
               }
             ]
           },
           {
-            "width": 450,
-            "height": 450,
+            "width": 475,
+            "height": 475,
             "title": "Distribution of Tree Diameters",
             "transform": [
               {"filter": {"param": "GenusSelection"}},
@@ -122,7 +112,8 @@
                     "field": "dbh",
                     "title": "Diameter (cm)"
                   },
-                  "y": {"aggregate": "count", "title": "Count of Trees"}
+                  "y": {"aggregate": "count", "title": "Count of Trees"},
+                  "tooltip": [{"aggregate": "count", "title": "Count of Trees"}]
                 }
               }
             ]
@@ -132,9 +123,9 @@
       {
         "hconcat": [
           {
-            "title": "Most Common Type of Tree in Melbourne",
-            "height": 450,
-            "width": 450,
+            "title": "Most Common Type of Tree",
+            "height": 475,
+            "width": 475,
             "mark": {"type": "bar", "color": "green"},
             "params": [
               {
@@ -172,6 +163,7 @@
               "y": {
                 "field": "genus",
                 "type": "nominal",
+                "title": "Genus",
                 "sort": {
                   "field": "aggregated_common_count",
                   "order": "descending"
@@ -180,13 +172,17 @@
               "opacity": {
                 "condition": {"param": "GenusSelection", "value": 1},
                 "value": 0.5
-              }
+              },
+              "tooltip": [
+                {"field": "genus", "title": "Genus: "},
+                {"field": "aggregated_common_count", "title": "Count of Tree: "}
+              ]
             }
           },
           {
-            "width": 450,
-            "height": 450,
-            "title": "Locations of the significant trees",
+            "width": 475,
+            "height": 475,
+            "title": "Locations of the Trees",
             "params": [
               {
                 "name": "LocationSelection",
@@ -196,7 +192,7 @@
             "layer": [
               {
                 "data": {
-                  "url": "https://raw.githubusercontent.com/JeremyrabUni/FIT3179_A2/main/data/yarra-significant-trees-fixed.csv"
+                  "url": "data/yarra-significant-trees-fixed.csv"
                 },
                 "transform": [
                   {"filter": {"param": "GenusSelection"}},
@@ -214,6 +210,7 @@
                 ],
                 "mark": {"type": "arc", "innerRadius": 100},
                 "encoding": {
+                    "tooltip":[{"field": "location", "title": "Location:"},{"field": "aggregated_location_count", "title": "Count of Tree"}],
                   "theta": {
                     "field": "aggregated_location_count",
                     "type": "quantitative"
@@ -233,7 +230,8 @@
                   "opacity": {
                     "condition": {"param": "LocationSelection", "value": 1},
                     "value": 0.5
-                  }
+                  },
+                  "legend":null
                 }
               }
             ]
@@ -241,8 +239,8 @@
         ]
       }
     ],
-    "config": {
+    "config": {"padding": 5,"concat":{"spacing": 50},
       "background": "#E0ECF4",
-      "style": {"cell": {"stroke": "transparent"}}
+      "style": {"cell": {"stroke": "transparent"}},"font":"Ubuntu", "font-size":"50px"
     }
   }

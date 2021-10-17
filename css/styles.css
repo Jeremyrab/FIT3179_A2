@@ -7,9 +7,20 @@
 	width: 600px;*/
 }
 
-h1, h2 {
-	font-family: sans-serif;
+h1 {
+	font-size: 50px;
+	font-family: Ubuntu;
 	text-align: center;
+}
+
+h2 {
+	font-size: 33px;
+	font-family: Ubuntu;
+	text-align: center;
+}
+
+h3, p, ul, li, p {
+	font-family: Ubuntu;
 }
 
 body {
@@ -31,4 +42,44 @@ body {
 	padding: 1em;
 }
 
+.newMaturity{
+	color: #A5DB96
+}
 
+.juvenileMaturity{
+	color: #87CC79
+}
+.semiMatureMaturity{
+	color: #6AB25F
+}
+.matureMaturity{
+	color: #4E9A51
+}
+
+.overMatureMaturity {
+	color: #346636;
+}
+
+.unknownMaturity {
+	color: #808080;
+}
+
+.industrialLocation {
+	color: #e41a1c
+}
+
+.otherLocation {
+	color: #377eb8
+}
+
+.parkLocation {
+	color: #4daf4a
+}
+
+.residentialLocation {
+	color: #984ea3
+}
+
+.streetLocation {
+	color: #ff7f00
+}

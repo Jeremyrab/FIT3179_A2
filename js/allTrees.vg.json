@@ -29,9 +29,9 @@
   ],
   "vconcat": [
     {
-      "width": 900,
+      "width": 950,
       "height": 500,
-      "title": "Trees in the City of Melbourne",
+      "title": "",
       "projection": {
         "type": "conicEqualArea",
         "parallels": [144.8515185, -37.77349821],
@@ -53,19 +53,20 @@
             "url": "data/Trees__with_species_and_dimensions__Urban_Forest_.csv",
             "format": {"type": "csv", "parse": {"YearPlanted": "number"}}
           },
-          "transform": [{"filter": "datum.YearPlanted <= PlantedBefore"},{"filter": {"param": "GenusSelection"}},{"filter": {"param": "MaturitySelection"}}],
+          "transform": [
+            {"filter": "datum.YearPlanted <= PlantedBefore"},
+            {"filter": {"param": "GenusSelection"}},
+            {"filter": {"param": "MaturitySelection"}}
+          ],
           "mark": "circle",
           "encoding": {
             "longitude": {"field": "Longitude", "type": "quantitative"},
             "latitude": {"field": "Latitude", "type": "quantitative"},
             "tooltip": [
-              {"field": "CoM ID", "type": "ordinal", "title": "Tree ID: "},
-              {
-                "field": "Located in",
-                "type": "nominal",
-                "title": "Located in: "
-              },
-              {"field": "height", "type": "quantitative", "title": "Height: "}
+              {"field": "AgeDescription", "title": "Maturity: "},
+              {"field": "Genus", "title": "Genus: "},
+              {"field": "Common Name", "title": "Common Name: "},
+              {"field": "Diameter Breast Height", "title": "Diameter (cm): "}
             ],
             "size": {"value": 5},
             "color": {
@@ -89,7 +90,8 @@
                 "Over-mature",
                 "Unknown"
               ],
-              "title": ""
+              "title": "",
+              "legend": null
             }
           }
         }
@@ -98,14 +100,16 @@
     {
       "hconcat": [
         {
-          "title": "Most Common Type of Tree in Melbourne",
-          "height": 450,
-          "width": 450,
+          "title": "Most Common Type of Tree",
+          "height": 475,
+          "width": 475,
           "mark": {"type": "bar", "color": "green"},
-          "params": [{
-            "name": "GenusSelection",
-            "select": {"type": "point", "encodings": ["y"]}
-          }],
+          "params": [
+            {
+              "name": "GenusSelection",
+              "select": {"type": "point", "encodings": ["y"]}
+            }
+          ],
           "transform": [
             {"filter": {"param": "MaturitySelection"}},
             {
@@ -143,71 +147,89 @@
             "opacity": {
               "condition": {"param": "GenusSelection", "value": 1},
               "value": 0.5
-            }
+            },
+            "tooltip": [
+              {"field": "Genus", "title": "Genus: "},
+              {"field": "aggregated_common_count", "title": "Count of Tree: "}
+            ]
           }
         },
-        {"width": 450,
-          "height": 450,
-          "title": "Locations of the significant trees",
-          "params": [{
-            "name": "MaturitySelection",
-            "select": {"type": "point", "fields": ["AgeDescription"]}
-          }],
-
-            
-              "data": {
-                "url": "data/Trees__with_species_and_dimensions__Urban_Forest_.csv"
-              },
-              "transform": [
-                {"filter": {"param": "GenusSelection"}},
+        {
+          "width": 475,
+          "height": 475,
+          "title": "Maturity of the Trees",
+          "params": [
+            {
+              "name": "MaturitySelection",
+              "select": {"type": "point", "fields": ["AgeDescription"]}
+            }
+          ],
+          "data": {
+            "url": "data/Trees__with_species_and_dimensions__Urban_Forest_.csv"
+          },
+          "transform": [
+            {"filter": {"param": "GenusSelection"}},
+            {
+              "aggregate": [
                 {
-                  "aggregate": [
-                    {
-                      "op": "count",
-                      "field": "AgeDescription",
-                      "as": "aggregated_AgeDescription_count"
-                    }
-                  ],
-                  "groupby": ["AgeDescription"]
+                  "op": "count",
+                  "field": "AgeDescription",
+                  "as": "aggregated_AgeDescription_count"
                 }
               ],
-              "mark": {"type": "arc", "innerRadius": 100},
-              "encoding": {
-                "tooltip":[{"field": "AgeDescription"}],
-                "theta": {
-                  "field": "aggregated_AgeDescription_count",
-                  "type": "quantitative",
-                  "sort": ["New", "Juvenile", "Semi-Mature", "Mature", "Over-mature"]
-                },
-                "color": {
-                  "field": "AgeDescription",
-                  "scale": {
-                    "range": [
-                      "#A5DB96",
-                      "#87CC79",
-                      "#6AB25F",
-                      "#4E9A51",
-                      "#346636",
-                      "#808080"
-                    ]
-                  },
-                  "type": "ordinal",
-                  "sort": ["New", "Juvenile", "Semi-Mature", "Mature", "Over-mature"],
-                  "title": "Maturity"
-                },
-                "opacity": {
-                  "condition": {"param": "MaturitySelection", "value": 1},
-                  "value": 0.5
-                }
+              "groupby": ["AgeDescription"]
+            }
+          ],
+          "mark": {"type": "arc", "innerRadius": 100},
+          "encoding": {
+            "tooltip": [
+              {"field": "AgeDescription", "title": "Maturity Level"},
+              {
+                "field": "aggregated_AgeDescription_count",
+                "title": "Count of Tree"
               }
-            
+            ],
+            "theta": {
+              "field": "aggregated_AgeDescription_count",
+              "type": "quantitative"
+            },
+            "color": {
+              "sort": [
+                "New",
+                "Juvenile",
+                "Semi-Mature",
+                "Mature",
+                "Over-mature"
+              ],
+              "field": "AgeDescription",
+              "scale": {
+                "range": [
+                  "#A5DB96",
+                  "#87CC79",
+                  "#6AB25F",
+                  "#4E9A51",
+                  "#346636",
+                  "#808080"
+                ]
+              },
+              "type": "ordinal",
+              "title": "Maturity",
+              "legend": null
+            },
+            "opacity": {
+              "condition": {"param": "MaturitySelection", "value": 1},
+              "value": 0.5
+            }
           }
+        }
       ]
     }
   ],
-  "config": {"background": "#E0ECF4",  "style": {
-    "cell": {
-      "stroke": "transparent"
-    }
-  }}
+  "config": {
+    "padding": 5,
+    "concat": {"spacing": 50},
+    "background": "#E0ECF4",
+    "style": {"cell": {"stroke": "transparent"}},
+    "font": "Ubuntu"
+  }
 }
